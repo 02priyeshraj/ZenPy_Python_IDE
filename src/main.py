@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
-        self.app_name = "Zrax"
+        self.app_name = "ZenPy"
         self.setWindowTitle(self.app_name)
         self.setWindowIcon(QIcon("./src/icons/logo.jpeg"))
         self.resize(1300, 900)
@@ -488,15 +488,13 @@ class MainWindow(QMainWindow):
         if self.process is not None:
             return
 
-        # Determine the shell based on the OS
         if os.name == 'nt':
-            # Windows
-            shell = 'cmd.exe'
-            args = ['/k', 'echo.', '&', 'Zrax Terminal']  # Keep the window open and display a message
+            shell = 'powershell.exe'
+            working_directory = os.getcwd().replace("\\", "/")  # Ensure correct path format
+            args = ['-NoExit', '-ExecutionPolicy', 'Bypass', '-NoProfile', f'cd "{working_directory}"']
         else:
-            # Linux, macOS, etc. (assuming bash is available)
             shell = 'bash'
-            args = ['-i']  # Interactive mode
+            args = ['-i']
 
         print(f"Starting terminal with shell: {shell} and args: {args}")
 
@@ -510,9 +508,18 @@ class MainWindow(QMainWindow):
         self.process.errorOccurred.connect(lambda error: print(f"Process error: {error}"))
         self.process.finished.connect(self.terminal_process_finished)
 
+        self.process.setWorkingDirectory(os.getcwd())  # Ensures terminal starts in correct location
         self.process.start()
-        self.terminal.setFocus() # Set focus when terminal starts
-        QTimer.singleShot(0, self.terminal.setFocus) # Force focus
+
+        # REMOVE MANUAL PROMPT INSERTION
+        # self.terminal.insertPlainText(f"{os.getcwd()}> ")  DO NOT ADD MANUAL PROMPT
+
+        self.terminal.setFocus()
+        QTimer.singleShot(0, self.terminal.setFocus)
+
+
+
+
 
     def stop_terminal(self):
         if self.process is not None and self.process.state() == QProcess.Running:
@@ -529,7 +536,7 @@ class MainWindow(QMainWindow):
 
             # Remove HTML-like font tags and ANSI escape codes
             clean_text = re.sub(r'<[^>]+>', '', text)  # Remove HTML tags
-            clean_text = re.sub(r'\x1b\[[0-9;]*m', '', clean_text)  # Remove ANSI escape codes
+            clean_text = re.sub(r'\x1b\[[0-9;]*m', '', clean_text) # Remove ANSI escape codes
 
             self.terminal.insertPlainText(clean_text)
             self.terminal.ensureCursorVisible()
@@ -555,32 +562,73 @@ class MainWindow(QMainWindow):
         print(f"Terminal process finished with code {exit_code} and status {exit_status}")
         self.process = None
 
+    def handle_output(self):
+        data = self.process.readAllStandardOutput().data()
+        encoding = sys.stdout.encoding or 'utf-8'  # Use system encoding or default to utf-8
+        try:
+            text = data.decode(encoding, errors='replace')  # Decode output
+
+            # Remove ANSI escape codes (if any)
+            clean_text = re.sub(r'\x1b\[[0-9;]*m', '', text)  
+
+            # Insert text into the terminal UI
+            self.terminal.insertPlainText(clean_text)
+            self.terminal.ensureCursorVisible()
+
+            # 🔥 Dynamically set prompt length when a new line appears
+            if clean_text.strip().endswith(">"):  # Detect PowerShell prompt (`C:\Users\...>`)
+                self.prompt_length = len(self.terminal.toPlainText().split("\n")[-1])
+
+        except Exception as e:
+            print(f"Error decoding output: {e}")
+
+
     def terminal_keyPressEvent(self, event: QKeyEvent):
         if self.process and self.process.state() == QProcess.Running:
-            if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
+            cursor = self.terminal.textCursor()
+            key = event.key()
+
+            if key in (Qt.Key_Return, Qt.Key_Enter):
                 self.process.write(b'\n')
-            elif event.key() == Qt.Key_Backspace:
-                # Only send backspace character to the process
-                self.process.write(b'\x08')
-            elif event.key() == Qt.Key_Delete:
+                event.accept()
+                return
+
+            elif key == Qt.Key_Backspace:
+                # Prevent user from deleting the prompt (only if prompt_length is set)
+                if hasattr(self, "prompt_length") and cursor.positionInBlock() > self.prompt_length:
+                    cursor.deletePreviousChar()
+                    self.process.write(b'\b')  # Send backspace to terminal process
+
+            elif key == Qt.Key_Delete:
                 self.process.write(b'\x7f')
-            elif event.key() == Qt.Key_Tab:
+
+            elif key == Qt.Key_Tab:
                 self.process.write(b'\t')
-            elif event.key() == Qt.Key_Up:  # Up arrow key
-                self.process.write(b'\x1b[A')  # ANSI escape code for up arrow
-            elif event.key() == Qt.Key_Down:  # Down arrow key
-                self.process.write(b'\x1b[B')  # ANSI escape code for down arrow
-            elif event.key() == Qt.Key_Left:  # Left arrow key
-                self.process.write(b'\x1b[D')  # ANSI escape code for left arrow
-            elif event.key() == Qt.Key_Right:  # Right arrow key
-                self.process.write(b'\x1b[C')  # ANSI escape code for right arrow
+
+            elif key == Qt.Key_Up:
+                self.process.write(b'\x1b[A')
+
+            elif key == Qt.Key_Down:
+                self.process.write(b'\x1b[B')
+
+            elif key == Qt.Key_Left:
+                if hasattr(self, "prompt_length") and cursor.positionInBlock() > self.prompt_length:
+                    self.process.write(b'\x1b[D')
+
+            elif key == Qt.Key_Right:
+                self.process.write(b'\x1b[C')
+
             else:
                 text = event.text()
-                self.process.write(text.encode())
+                if text:
+                    self.process.write(text.encode())
 
             event.accept()
         else:
             QTextEdit.keyPressEvent(self.terminal, event)
+
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
