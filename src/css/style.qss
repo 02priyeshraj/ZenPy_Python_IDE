@@ -1,0 +1,264 @@
+/* General app styling */
+QMainWindow {
+    background-color: #1f1f1f; /* A slightly lighter, more modern dark background */
+    color: #FFFFFF; /* Light text color for general readability */
+    font-family: "FiraCode", monospace; /* Use the same code-friendly font */
+    font-size: 13px;
+}
+
+/* Menu Bar */
+QMenuBar {
+    background-color: #1f1f1f; /* A slightly lighter shade for contrast */
+    color: #D3D3D3; /* Keep text light for visibility */
+    border: none;
+}
+
+QMenuBar::item {
+    background-color: #1f1f1f;
+    padding: 8px 12px; /* Increase padding for better click area */
+    margin: 2px 4px; /* Add a bit of margin */
+    border-radius: 4px;
+}
+
+QMenuBar::item:selected {
+    background-color: #1f1f1f; /* Highlight color on hover */
+}
+
+QMenu {
+    background-color: #1f1f1f;
+    color: #D3D3D3;
+    border: 1px solid #556B2F; /* Subtle border */
+    margin: 0px; /* Remove the default menu margin */
+}
+
+QMenu::item {
+    background-color: #1f1f1f;
+    padding: 8px 20px;
+    margin: 1px 0px;
+    border-radius: 3px;
+}
+
+QMenu::item:selected {
+    background-color: #1f1f1f;
+}
+
+/* Status Bar */
+QStatusBar {
+    background-color: #1f1f1f;
+    color: #D3D3D3;
+    border: none;
+    padding: 4px;
+}
+
+/* Side Bar (assuming it's a QFrame) */
+QFrame#side_bar { /* Target by object name if possible */
+    background-color: #1f1f1f; /* Dark side bar color */
+    border: none;
+    border-radius: 0px;
+}
+
+/* File Manager Frame and Search Frame */
+QFrame#file_manager_frame, QFrame#search_frame {
+    background-color: #1f1f1f;
+    border-radius: 6px;
+    border: none;
+    padding: 10px;
+    color: #D3D3D3;
+}
+
+/* Tabs */
+QTabWidget::pane { /* The tab content area */
+    border: none;
+    background-color: #1f1f1f; /* Background color of the tab content */
+    border-radius: 6px;
+    padding: 8px;
+}
+
+QTabWidget::tab-bar {
+    alignment: center;
+}
+
+QTabBar::tab {
+    background-color: #1f1f1f; /* Default tab color */
+    color: #D3D3D3;
+    border: none;
+    padding: 8px 20px; /* Adjust padding for tab size */
+    margin: 2px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+QTabBar::tab:selected {
+    background-color: #1f1f1f; /* Color of the active tab */
+    color: white;
+}
+
+QTabBar::tab:!selected {
+    margin-top: 3px; /* Shift non-selected tabs slightly down */
+}
+
+/* Buttons, Line Edits, and other Input Widgets */
+QPushButton, QLineEdit, QListWidget, QTreeView, QCheckBox {
+    background-color: #1f1f1f;
+    color: #D3D3D3;
+    border: 1px solid #556B2F;
+    border-radius: 5px;
+    padding: 6px;
+    outline: none; /* Remove default focus highlight */
+}
+
+QPushButton:hover, QLineEdit:hover, QListWidget:hover, QTreeView:hover, QCheckBox:hover {
+    border-color: #6A8443; /* Slightly brighter border on hover */
+}
+
+QPushButton:pressed {
+    background-color: #1f1f1f; /* Darker shade when pressed */
+}
+
+QLineEdit:focus {
+    border-color: #6A8443; /* Highlight color when focused */
+}
+
+/* QsciScintilla (Text Editor) Styling - Needs to be applied directly in code */
+/* See the Python code modifications below */
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background: #1f1f1f;
+    width: 10px;
+    margin: 0px 0px 0px 0px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical {
+    background: #556B2F;
+    min-height: 20px;
+    border-radius: 5px;
+}
+
+QScrollBar::add-line:vertical {
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    height: 0 px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:horizontal {
+    background: #1f1f1f;
+    height: 10px;
+    margin: 0px 0px 0px 0px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #556B2F;
+    min-width: 20px;
+    border-radius: 5px;
+}
+
+QScrollBar::add-line:horizontal {
+    width: 0px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    width: 0px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+/* QSplitter */
+QSplitter::handle {
+    background: #1f1f1f;
+}
+
+QSplitter::handle:horizontal {
+    width: 4px;
+}
+
+QSplitter::handle:vertical {
+    height: 4px;
+}
+
+/* List Widget (Search Results) */
+QListWidget {
+    background-color: #1f1f1f;
+    border-radius: 6px;
+    border: 1px solid #556B2F;
+    padding: 8px;
+    color: #D3D3D3;
+    outline: 0;
+}
+
+QListWidget::item {
+    padding: 6px 10px;
+    margin: 2px 0;
+    border-radius: 4px;
+}
+
+QListWidget::item:selected {
+    background-color: #1f1f1f; /* Highlight selected item */
+    color: white;
+}
+
+QListWidget::item:hover {
+    background-color: #1f1f1f;
+}
+
+/* Checkbox */
+QCheckBox {
+    color: #D3D3D3;
+    spacing: 5px;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QCheckBox::indicator:unchecked {
+    border: 1px solid #556B2F;
+    background: #3A4B58;
+}
+
+QCheckBox::indicator:checked {
+    background: #6A8443;
+    border: 1px solid #6A8443;
+}
+
+/* Context Menu */
+QMenu {
+    background-color: #1f1f1f;
+    color: #D3D3D3;
+    border: 1px solid #556B2F;
+    margin: 0px;
+}
+
+QMenu::item {
+    background-color: #1f1f1f;
+    padding: 8px 20px;
+    margin: 1px 0px;
+    border-radius: 3px;
+}
+
+QMenu::item:selected {
+    background-color: #1f1f1f;
+}
+
+/* Dialogs (QMessageBox) - Limited Styling */
+QMessageBox {
+    background-color: #1f1f1f;
+    color: #D3D3D3;
+}
+
+QMessageBox QPushButton {
+    min-width: 80px;
+    min-height: 25px;
+    margin: 5px;
+}
